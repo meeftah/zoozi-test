@@ -1,30 +1,17 @@
 import 'package:dio/dio.dart';
-import '../constants/api.constants.dart';
-import '../storage/secure.storage.dart';
+import 'package:zoozitest/core/constants/api.constants.dart';
+import 'package:zoozitest/core/utils/logger.dart';
 
 class ApiInterceptor extends Interceptor {
-  final SecureStorage secureStorage;
-
-  ApiInterceptor(this.secureStorage);
-
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
-    // Skip token for auth endpoints
-    if (!options.path.contains('/auth/')) {
-      final token = await secureStorage.getToken();
-      if (token != null) {
-        options.headers[ApiConstants.authorization] = '${ApiConstants.bearer} $token';
-      }
-    }
-    handler.next(options);
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    options.baseUrl = ApiConstants.baseUrl;
+    super.onRequest(options, handler);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    if (err.response?.statusCode == 401) {
-      // Token expired or invalid - clear token
-      secureStorage.deleteToken();
-    }
-    handler.next(err);
+    logger.e(err.response?.statusCode);
+    super.onError(err, handler);
   }
 }
