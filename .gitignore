@@ -47,4 +47,4 @@ app.*.map.json
 # Generated Dart files
 *.g.dart
 
-.vscode/settings.json
+.vscode/*
