@@ -65,7 +65,7 @@ Future<void> _initExternal() async {
   sl.registerLazySingleton<Dio>(() {
     final dio = Dio();
     // Add your interceptors here
-    dio.interceptors.add(ApiInterceptor());
+    dio.interceptors.add(ApiInterceptor(sl()));
     return dio;
   });
   
