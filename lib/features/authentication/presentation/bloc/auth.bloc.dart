@@ -61,6 +61,5 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } else {
       emit(UnauthenticatedState());
     }
-    // emit(UnauthenticatedState());
   }
 }
