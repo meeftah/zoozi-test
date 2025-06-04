@@ -5,9 +5,10 @@ part 'user.model.g.dart';
 
 @JsonSerializable()
 class UserModel extends User {
-  const UserModel({
-    required super.accessToken,
-  });
+  @JsonKey(name: 'access_token')
+  final String accessToken;
+
+   const UserModel({required this.accessToken}) : super(accessToken: accessToken);
 
   factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
   
