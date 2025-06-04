@@ -13,6 +13,12 @@ import 'package:zoozitest/features/authentication/domain/usecases/login.usecase.
 import 'package:zoozitest/features/authentication/domain/usecases/logout.usecase.dart';
 import 'package:zoozitest/features/authentication/domain/usecases/register.usecase.dart';
 import 'package:zoozitest/features/authentication/presentation/bloc/auth.bloc.dart';
+import 'package:zoozitest/features/home/data/datasources/wallet.remote.data.source.dart';
+import 'package:zoozitest/features/home/data/repositories/wallet.repository.impl.dart';
+import 'package:zoozitest/features/home/domain/repositories/wallet.repository.dart';
+import 'package:zoozitest/features/home/domain/usecases/wallet.add.usecase.dart';
+import 'package:zoozitest/features/home/domain/usecases/wallet.get.usecase.dart';
+import 'package:zoozitest/features/home/presentation/bloc/home.bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -34,11 +40,17 @@ Future<void> _initAuth() async {
     registerUseCase: sl(),
     logoutUseCase: sl(),
   ));
+  sl.registerFactory(() => HomeBloc(
+    getWalletsUseCase: sl(),
+    addWalletUseCase: sl(),
+  ));
 
   // Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
   sl.registerLazySingleton(() => RegisterUseCase(sl()));
   sl.registerLazySingleton(() => LogoutUseCase(sl()));
+  sl.registerLazySingleton(() => WalletAddUseCase(sl()));
+  sl.registerLazySingleton(() => WalletGetUseCase(sl()));
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(
@@ -48,10 +60,19 @@ Future<void> _initAuth() async {
       secureStorage: sl(),
     ),
   );
+  sl.registerLazySingleton<WalletRepository>(
+    () => WalletRepositoryImpl(
+      remoteDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
 
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(apiHelper: sl()), // Updated to use apiHelper
+  );
+  sl.registerLazySingleton<WalletRemoteDataSource>(
+    () => WalletRemoteDataSourceImpl(apiHelper: sl()), // Updated to use apiHelper
   );
 }
 
