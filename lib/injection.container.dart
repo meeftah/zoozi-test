@@ -1,7 +1,9 @@
+// di.dart
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
-import 'package:zoozitest/core/network/dio.client.dart';
+import 'package:get_it/get_it.dart';
+import 'package:zoozitest/core/network/api.helper.dart';
+import 'package:zoozitest/core/network/api.interceptor.dart';
 import 'package:zoozitest/core/network/network.info.dart';
 import 'package:zoozitest/core/storage/secure.storage.dart';
 import 'package:zoozitest/features/authentication/data/datasources/auth.remote.data.source.dart';
@@ -15,14 +17,14 @@ import 'package:zoozitest/features/authentication/presentation/bloc/auth.bloc.da
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  //! Features
-  await _initAuth();
-  
   //! Core
   await _initCore();
   
   //! External
   await _initExternal();
+  
+  //! Features
+  await _initAuth(); // Must come after core and external
 }
 
 Future<void> _initAuth() async {
@@ -43,12 +45,13 @@ Future<void> _initAuth() async {
     () => AuthRepositoryImpl(
       remoteDataSource: sl(),
       networkInfo: sl(),
+      secureStorage: sl(),
     ),
   );
 
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(dioClient: sl()),
+    () => AuthRemoteDataSourceImpl(apiHelper: sl()), // Updated to use apiHelper
   );
 }
 
@@ -58,6 +61,14 @@ Future<void> _initCore() async {
 }
 
 Future<void> _initExternal() async {
-  sl.registerLazySingleton(() => DioClient(sl()));
+  // Add Dio registration
+  sl.registerLazySingleton<Dio>(() {
+    final dio = Dio();
+    // Add your interceptors here
+    dio.interceptors.add(ApiInterceptor());
+    return dio;
+  });
+  
+  sl.registerLazySingleton(() => ApiHelper(sl())); // Now correctly gets Dio
   sl.registerLazySingleton(() => Connectivity());
 }
