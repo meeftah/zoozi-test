@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:zoozitest/features/authentication/domain/entities/user.dart';
+import 'package:zoozitest/features/authentication/domain/entities/access.token.dart';
 
 abstract class AuthState extends Equatable {
   const AuthState();
@@ -13,12 +13,12 @@ class AuthInitialState extends AuthState {}
 class AuthLoadingState extends AuthState {}
 
 class AuthenticatedState extends AuthState {
-  final User user;
+  final AccessToken accessToken;
 
-  const AuthenticatedState(this.user);
+  const AuthenticatedState(this.accessToken);
 
   @override
-  List<Object> get props => [user];
+  List<Object> get props => [accessToken];
 }
 
 class UnauthenticatedState extends AuthState {}
@@ -31,3 +31,5 @@ class AuthErrorState extends AuthState {
   @override
   List<Object> get props => [message];
 }
+
+class RegisteredState extends AuthState {}

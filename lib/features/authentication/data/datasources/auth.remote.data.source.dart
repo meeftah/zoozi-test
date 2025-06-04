@@ -5,10 +5,12 @@ import 'package:zoozitest/core/network/api.helper.dart';
 import 'package:zoozitest/core/utils/logger.dart';
 import 'package:zoozitest/features/authentication/data/models/login.request.model.dart';
 import 'package:zoozitest/features/authentication/data/models/register.request.model.dart';
+import 'package:zoozitest/features/authentication/data/models/token.model.dart';
 import 'package:zoozitest/features/authentication/data/models/user.model.dart';
+import 'package:zoozitest/features/authentication/domain/entities/user.dart';
 
 abstract class AuthRemoteDataSource {
-  Future<UserModel> login({required String email, required String password});
+  Future<TokenModel> login({required String email, required String password});
 
   Future<UserModel> register({required String email, required String password, String? name});
 }
@@ -19,11 +21,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   AuthRemoteDataSourceImpl({required this.apiHelper});
 
   @override
-  Future<UserModel> login({required String email, required String password}) async {
+  Future<TokenModel> login({required String email, required String password}) async {
     try {
       final requestModel = LoginRequestModel(email: email, password: password);
       final response = await apiHelper.execute(method: Method.post, url: ApiConstants.login, data: requestModel.toJson());
-      return UserModel.fromJson(response);
+      return TokenModel.fromJson(response);
     } on EmptyException {
       throw AuthException();
     } catch (e) {

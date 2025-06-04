@@ -5,6 +5,7 @@ import 'package:zoozitest/core/error/failures.dart';
 import 'package:zoozitest/core/network/network.info.dart';
 import 'package:zoozitest/core/storage/secure.storage.dart';
 import 'package:zoozitest/features/authentication/data/datasources/auth.remote.data.source.dart';
+import 'package:zoozitest/features/authentication/domain/entities/access.token.dart';
 import 'package:zoozitest/features/authentication/domain/entities/user.dart';
 import 'package:zoozitest/features/authentication/domain/repositories/auth.repository.dart';
 
@@ -16,12 +17,12 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({required this.remoteDataSource, required this.networkInfo, required this.secureStorage});
 
   @override
-  Future<Either<Failure, User>> login({required String email, required String password}) async {
+  Future<Either<Failure, AccessToken>> login({required String email, required String password}) async {
     if (await networkInfo.isConnected) {
       try {
-        final userModel = await remoteDataSource.login(email: email, password: password);
-        await secureStorage.saveToken(userModel.accessToken);
-        return Right(userModel);
+        final tokenModel = await remoteDataSource.login(email: email, password: password);
+        await secureStorage.saveToken(tokenModel.accessToken);
+        return Right(tokenModel);
       } on AuthException {
         return Left(CredentialFailure());
       } on ServerException {

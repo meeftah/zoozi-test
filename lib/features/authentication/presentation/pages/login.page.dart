@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
               SnackBar(
                 content: Text(state.message, style: const TextStyle(color: Colors.white)),
                 backgroundColor: Colors.red,
-                duration: const Duration(seconds: 5), // Extend duration
+                duration: const Duration(seconds: 5),
               ),
             );
           }

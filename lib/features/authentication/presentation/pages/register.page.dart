@@ -34,17 +34,23 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Account'),
-      ),
+      appBar: AppBar(title: const Text('Create Account')),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthenticatedState) {
             Navigator.pushReplacementNamed(context, AppRoutes.home);
+          } else if (state is RegisteredState) {
+            Navigator.pushReplacementNamed(context, AppRoutes.login);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Please login with your email and password', style: TextStyle(color: Colors.white)),
+                backgroundColor: Colors.green,
+              ),
+            );
           } else if (state is AuthErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.message),
+                content: Text(state.message, style: TextStyle(color: Colors.white)),
                 backgroundColor: Colors.red,
               ),
             );
@@ -62,37 +68,25 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(height: 32),
                     const Text(
                       'Create Your Account',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
                     const Text(
                       'Fill in the details to get started',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 48),
                     TextFormField(
                       controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Full Name (Optional)',
-                        prefixIcon: Icon(Icons.person),
-                      ),
+                      decoration: const InputDecoration(labelText: 'Full Name (Optional)', prefixIcon: Icon(Icons.person)),
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email),
-                      ),
+                      decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.email)),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your email';
@@ -111,9 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         labelText: 'Password',
                         prefixIcon: const Icon(Icons.lock),
                         suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                          ),
+                          icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
                           onPressed: () {
                             setState(() {
                               _obscurePassword = !_obscurePassword;
@@ -139,9 +131,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         labelText: 'Confirm Password',
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
-                          ),
+                          icon: Icon(_obscureConfirmPassword ? Icons.visibility : Icons.visibility_off),
                           onPressed: () {
                             setState(() {
                               _obscureConfirmPassword = !_obscureConfirmPassword;
@@ -165,11 +155,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         if (state is AuthLoadingState) {
                           return const LoadingWidget();
                         }
-                        
-                        return ElevatedButton(
-                          onPressed: _onRegisterPressed,
-                          child: const Text('Create Account'),
-                        );
+
+                        return ElevatedButton(onPressed: _onRegisterPressed, child: const Text('Create Account'));
                       },
                     ),
                     const SizedBox(height: 16),
@@ -198,11 +185,7 @@ class _RegisterPageState extends State<RegisterPage> {
   void _onRegisterPressed() {
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
-        RegisterEvent(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-          name: _nameController.text.trim().isEmpty ? null : _nameController.text.trim(),
-        ),
+        RegisterEvent(email: _emailController.text.trim(), password: _passwordController.text, name: _nameController.text.trim().isEmpty ? null : _nameController.text.trim()),
       );
     }
   }

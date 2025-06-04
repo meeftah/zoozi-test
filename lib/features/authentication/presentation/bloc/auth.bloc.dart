@@ -6,7 +6,7 @@ import 'package:zoozitest/core/error/failures.dart';
 import 'package:zoozitest/core/storage/secure.storage.dart';
 import 'package:zoozitest/core/usecases/usecase.dart';
 import 'package:zoozitest/core/utils/failure.converter.dart';
-import 'package:zoozitest/features/authentication/domain/entities/user.dart';
+import 'package:zoozitest/features/authentication/domain/entities/access.token.dart';
 import 'package:zoozitest/features/authentication/domain/usecases/login.usecase.dart';
 import 'package:zoozitest/features/authentication/domain/usecases/logout.usecase.dart';
 import 'package:zoozitest/features/authentication/domain/usecases/register.usecase.dart';
@@ -38,7 +38,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final result = await registerUseCase(RegisterParams(email: event.email, password: event.password, name: event.name));
 
-    result.fold((failure) => emit(AuthErrorState(failure.toString())), (user) => emit(AuthenticatedState(user)));
+    result.fold((failure) => emit(AuthErrorState(failure.toString())), (user) => emit(RegisteredState()));
   }
 
   void _onLogout(LogoutEvent event, Emitter<AuthState> emit) async {
@@ -56,8 +56,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final token = await secureStorage.getToken();
 
     if (token != null && token.isNotEmpty) {
-      final user = User(accessToken: token);
-      emit(AuthenticatedState(user)); // you can also pass user data if needed
+      final accessToken = AccessToken(accessToken: token);
+      emit(AuthenticatedState(accessToken)); // you can also pass user data if needed
     } else {
       emit(UnauthenticatedState());
     }
