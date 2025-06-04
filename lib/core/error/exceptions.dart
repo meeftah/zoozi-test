@@ -1,19 +1,7 @@
-class ServerException implements Exception {
-  final String message;
-  
-  const ServerException(this.message);
-}
+class ServerException implements Exception {}
 
-class NetworkException implements Exception {
-  const NetworkException();
-}
+class CacheException implements Exception {}
 
-class CacheException implements Exception {
-  const CacheException();
-}
+class AuthException implements Exception {}
 
-class AuthenticationException implements Exception {
-  final String message;
-  
-  const AuthenticationException(this.message);
-}
+class EmptyException implements Exception {}
